@@ -1,17 +1,98 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: otel-demo-route
+  name: oteldemo-route
   namespace: otel-demo
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      namespace: otel-demo
+      sectionName: oteldemo
+  hostnames:
+    - oteldemo.easysolution.work
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /
-      backendRefs:
+    - backendRefs:
         - name: frontend-proxy
           port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: grafana-route
+  namespace: otel-demo
+spec:
+  parentRefs:
+    - name: otel-demo-gateway
+      sectionName: grafana
+  hostnames:
+    - grafana-oteldemo.easysolution.work
+  rules:
+    - backendRefs:
+        - name: grafana
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: jaeger-route
+  namespace: otel-demo
+spec:
+  parentRefs:
+    - name: otel-demo-gateway
+      sectionName: jaeger
+  hostnames:
+    - jaeger-oteldemo.easysolution.work
+  rules:
+    - backendRefs:
+        - name: jaeger
+          port: 16686
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: loadgen-route
+  namespace: otel-demo
+spec:
+  parentRefs:
+    - name: otel-demo-gateway
+      sectionName: loadgen
+  hostnames:
+    - loadgen-oteldemo.easysolution.work
+  rules:
+    - backendRefs:
+        - name: load-generator
+          port: 8089
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: flagd-route
+  namespace: otel-demo
+spec:
+  parentRefs:
+    - name: otel-demo-gateway
+      sectionName: flagd
+  hostnames:
+    - flagd-oteldemo.easysolution.work
+  rules:
+    - backendRefs:
+        - name: flagd
+          port: 4000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: argocd-route
+  namespace: otel-demo
+spec:
+  parentRefs:
+    - name: otel-demo-gateway
+      sectionName: argocd
+  hostnames:
+    - argocd-oteldemo.easysolution.work
+  rules:
+    - backendRefs:
+        - group: ""
+          kind: Service
+          name: argocd-server
+          namespace: argocd
+          port: 80

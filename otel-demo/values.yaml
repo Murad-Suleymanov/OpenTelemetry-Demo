@@ -1003,8 +1003,8 @@ grafana:
     auth.anonymous:
       enabled: false
     server:
-      root_url: "%(protocol)s://%(domain)s:%(http_port)s/grafana"
-      serve_from_sub_path: true
+      root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
+      serve_from_sub_path: false
   adminPassword: murad7171
   plugins:
     - grafana-opensearch-datasource
