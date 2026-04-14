@@ -133,9 +133,12 @@ echo " Step 8/8: Apply Gateway, HTTPRoutes, TLS Certificates"
 echo "=========================================="
 kubectl apply -f "${REPO_DIR}/gateway/gateway.yaml"
 kubectl apply -f "${REPO_DIR}/gateway/httproute.yaml"
-kubectl apply -f "${REPO_DIR}/gateway/http-redirect.yaml"
 kubectl apply -f "${REPO_DIR}/gateway/reference-grant.yaml"
 kubectl apply -f "${REPO_DIR}/gateway/certificates.yaml"
+# NOTE: http-redirect.yaml is NOT applied here.
+# Apply it manually AFTER all certificates show READY=True:
+#   kubectl get certificates -n otel-demo
+#   kubectl apply -f gateway/http-redirect.yaml
 
 echo ""
 echo "Waiting for Gateway to get external IP..."

@@ -1,3 +1,9 @@
+# HTTP-to-HTTPS redirect
+# Apply this ONLY AFTER certificates are Ready:
+#   kubectl get certificates -n otel-demo
+# All should show READY=True before applying this file.
+#
+# kubectl apply -f gateway/http-redirect.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
