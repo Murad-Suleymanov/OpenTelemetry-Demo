@@ -765,11 +765,9 @@ opentelemetry-collector:
   resources:
     limits:
       memory: 200Mi
-  service:
-    enabled: true
-    ports:
-      metrics:
-        enabled: true
+  ports:
+    metrics:
+      enabled: true
   config:
     receivers:
       otlp:
@@ -792,14 +790,10 @@ opentelemetry-collector:
         endpoint: jaeger:4317
         tls:
           insecure: true
-        sending_queue:
-        batch:
       otlphttp/prometheus:
         endpoint: http://prometheus:9090/api/v1/otlp
         tls:
           insecure: true
-        sending_queue:
-        batch:
       opensearch:
         logs_index: otel-logs
         logs_index_time_format: "yyyy-MM-dd"
