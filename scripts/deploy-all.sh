@@ -6,7 +6,7 @@ set -euo pipefail
 # Run on CONTROL-PLANE node (ubuntu-4gb-nbg1-1)
 #
 # Cluster: 1 master + 2 workers, 4GB RAM each, K8s v1.30.14
-# Installs: Helm, ArgoCD, Envoy Gateway, OTel Demo
+# Installs: Helm, ArgoCD, NGINX Gateway Fabric, OTel Demo
 ###############################################################################
 
 REPO_URL="https://github.com/Murad-Suleymanov/OpenTelemetry-Demo.git"
@@ -52,16 +52,15 @@ echo "  Pass: ${ARGOCD_PASS}"
 
 echo ""
 echo "=========================================="
-echo " Step 3/6: Install Envoy Gateway (Gateway API)"
+echo " Step 3/6: Install NGINX Gateway Fabric (Gateway API)"
 echo "=========================================="
-helm install eg oci://docker.io/envoyproxy/gateway-helm \
-  --version v1.3.0 \
-  --namespace envoy-gateway-system --create-namespace \
-  --wait --timeout 3m 2>/dev/null || echo "Envoy Gateway already installed, skipping..."
+helm install ngf oci://ghcr.io/nginx/charts/nginx-gateway-fabric \
+  --create-namespace --namespace nginx-gateway \
+  --wait --timeout 3m 2>/dev/null || echo "NGINX Gateway Fabric already installed, skipping..."
 
-echo "Waiting for Envoy Gateway controller..."
-kubectl wait --for=condition=Available deployment/envoy-gateway \
-  -n envoy-gateway-system --timeout=120s
+echo "Waiting for NGINX Gateway Fabric controller..."
+kubectl wait --for=condition=Available deployment/ngf-nginx-gateway-fabric \
+  -n nginx-gateway --timeout=120s
 
 echo ""
 echo "=========================================="
