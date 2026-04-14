@@ -51,7 +51,7 @@ ARGOCD_BCRYPT='$2b$12$MwI8balXhgleuhQYHaf3huhKBw6KEO/B757W2.JGHHTDLwaIVYfQ.'
 
 helm upgrade --install argocd argo/argo-cd \
   --namespace argocd --create-namespace \
-  --set server.service.type=LoadBalancer \
+  --set server.service.type=ClusterIP \
   --set "configs.params.server\.insecure=true" \
   --set dex.enabled=false \
   --set "configs.secret.argocdServerAdminPassword=${ARGOCD_BCRYPT}" \
