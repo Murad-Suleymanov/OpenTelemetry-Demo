@@ -1,0 +1,19 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: otel-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 178.104.7.230/32
+    - 91.99.97.85/32
+    - 178.104.193.50/32
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: otel-l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - otel-pool
