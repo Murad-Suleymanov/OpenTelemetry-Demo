@@ -10,80 +10,12 @@ kind: Gateway
 metadata:
   name: otel-demo-gateway
   namespace: otel-demo
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   gatewayClassName: eg
   listeners:
-    - name: oteldemo-https
-      protocol: HTTPS
-      port: 443
-      hostname: oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: oteldemo-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: grafana-https
-      protocol: HTTPS
-      port: 443
-      hostname: grafana-oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: grafana-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: jaeger-https
-      protocol: HTTPS
-      port: 443
-      hostname: jaeger-oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: jaeger-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: loadgen-https
-      protocol: HTTPS
-      port: 443
-      hostname: loadgen-oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: loadgen-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: flagd-https
-      protocol: HTTPS
-      port: 443
-      hostname: flagd-oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: flagd-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: argocd-https
-      protocol: HTTPS
-      port: 443
-      hostname: argocd-oteldemo.easysolution.work
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: argocd-tls
-      allowedRoutes:
-        namespaces:
-          from: Same
-    - name: http-redirect
+    - name: http
       protocol: HTTP
       port: 80
       allowedRoutes:
         namespaces:
-          from: Same
+          from: All

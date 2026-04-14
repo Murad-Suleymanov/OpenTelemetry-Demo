@@ -6,7 +6,6 @@ metadata:
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: oteldemo
   hostnames:
     - oteldemo.easysolution.work
   rules:
@@ -22,7 +21,6 @@ metadata:
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: grafana
   hostnames:
     - grafana-oteldemo.easysolution.work
   rules:
@@ -38,7 +36,6 @@ metadata:
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: jaeger
   hostnames:
     - jaeger-oteldemo.easysolution.work
   rules:
@@ -54,7 +51,6 @@ metadata:
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: loadgen
   hostnames:
     - loadgen-oteldemo.easysolution.work
   rules:
@@ -70,7 +66,6 @@ metadata:
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: flagd
   hostnames:
     - flagd-oteldemo.easysolution.work
   rules:
@@ -82,17 +77,14 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: argocd-route
-  namespace: otel-demo
+  namespace: argocd
 spec:
   parentRefs:
     - name: otel-demo-gateway
-      sectionName: argocd
+      namespace: otel-demo
   hostnames:
     - argocd-oteldemo.easysolution.work
   rules:
     - backendRefs:
-        - group: ""
-          kind: Service
-          name: argocd-server
-          namespace: argocd
+        - name: argocd-server
           port: 80
