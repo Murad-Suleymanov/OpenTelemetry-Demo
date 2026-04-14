@@ -87,7 +87,24 @@ kubectl wait --for=condition=Available deployment/envoy-gateway \
 
 echo ""
 echo "=========================================="
-echo " Step 5/7: Clone repo & apply manifests"
+echo " Step 5/8: Install cert-manager (Let's Encrypt TLS)"
+echo "=========================================="
+helm repo add jetstack https://charts.jetstack.io 2>/dev/null || true
+helm repo update
+
+helm upgrade --install cert-manager jetstack/cert-manager \
+  --namespace cert-manager --create-namespace \
+  --set crds.enabled=true \
+  --set featureGates="ExperimentalGatewayAPISupport=true" \
+  --wait --timeout 3m
+
+echo "Waiting for cert-manager..."
+kubectl wait --for=condition=Available deployment/cert-manager \
+  -n cert-manager --timeout=120s
+
+echo ""
+echo "=========================================="
+echo " Step 6/8: Clone repo & apply manifests"
 echo "=========================================="
 rm -rf "${REPO_DIR}"
 git clone "${REPO_URL}" "${REPO_DIR}"
@@ -100,7 +117,7 @@ kubectl apply -f "${REPO_DIR}/argocd/argocd-app-project.yaml"
 
 echo ""
 echo "=========================================="
-echo " Step 6/7: Deploy OTel Demo via ArgoCD"
+echo " Step 7/8: Deploy OTel Demo via ArgoCD"
 echo "=========================================="
 kubectl create namespace otel-demo --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f "${REPO_DIR}/apps/otel-demo-application-git.yaml"
@@ -112,10 +129,13 @@ kubectl get application otel-demo -n argocd 2>/dev/null || echo "  (still initia
 
 echo ""
 echo "=========================================="
-echo " Step 7/7: Apply Gateway + HTTPRoute"
+echo " Step 8/8: Apply Gateway, HTTPRoutes, TLS Certificates"
 echo "=========================================="
 kubectl apply -f "${REPO_DIR}/gateway/gateway.yaml"
 kubectl apply -f "${REPO_DIR}/gateway/httproute.yaml"
+kubectl apply -f "${REPO_DIR}/gateway/http-redirect.yaml"
+kubectl apply -f "${REPO_DIR}/gateway/reference-grant.yaml"
+kubectl apply -f "${REPO_DIR}/gateway/certificates.yaml"
 
 echo ""
 echo "Waiting for Gateway to get external IP..."
@@ -141,9 +161,10 @@ echo "   https://${ARGOCD_IP}"
 echo "   User: admin / Pass: ${ARGOCD_PASS}"
 echo ""
 echo " Services (once pods are ready):"
-echo "   Web Store:      http://${GW_IP}/"
-echo "   Grafana:        http://${GW_IP}/grafana/"
-echo "   Jaeger UI:      http://${GW_IP}/jaeger/ui/"
-echo "   Load Generator: http://${GW_IP}/loadgen/"
-echo "   Feature Flags:  http://${GW_IP}/feature"
+echo "   Web Store:      https://oteldemo.easysolution.work"
+echo "   Grafana:        https://grafana-oteldemo.easysolution.work"
+echo "   Jaeger UI:      https://jaeger-oteldemo.easysolution.work"
+echo "   Load Generator: https://loadgen-oteldemo.easysolution.work"
+echo "   Feature Flags:  https://flagd-oteldemo.easysolution.work"
+echo "   ArgoCD:         https://argocd-oteldemo.easysolution.work"
 echo ""

@@ -1,0 +1,95 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@easysolution.work
+    privateKeySecretRef:
+      name: letsencrypt-prod-key
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: otel-demo-gateway
+                namespace: otel-demo
+                kind: Gateway
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: oteldemo-tls
+  namespace: otel-demo
+spec:
+  secretName: oteldemo-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - oteldemo.easysolution.work
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-tls
+  namespace: otel-demo
+spec:
+  secretName: grafana-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - grafana-oteldemo.easysolution.work
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: jaeger-tls
+  namespace: otel-demo
+spec:
+  secretName: jaeger-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - jaeger-oteldemo.easysolution.work
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loadgen-tls
+  namespace: otel-demo
+spec:
+  secretName: loadgen-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - loadgen-oteldemo.easysolution.work
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: flagd-tls
+  namespace: otel-demo
+spec:
+  secretName: flagd-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - flagd-oteldemo.easysolution.work
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-tls
+  namespace: otel-demo
+spec:
+  secretName: argocd-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+    - argocd-oteldemo.easysolution.work

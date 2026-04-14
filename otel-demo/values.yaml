@@ -1003,7 +1003,7 @@ grafana:
     auth.anonymous:
       enabled: false
     server:
-      root_url: "%(protocol)s://%(domain)s:%(http_port)s/"
+      root_url: "https://grafana-oteldemo.easysolution.work/"
       serve_from_sub_path: false
   adminPassword: murad7171
   plugins:
