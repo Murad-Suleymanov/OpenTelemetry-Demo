@@ -47,19 +47,21 @@ echo "=========================================="
 helm repo add argo https://argoproj.github.io/argo-helm 2>/dev/null || true
 helm repo update
 
+ARGOCD_BCRYPT='$2b$12$MwI8balXhgleuhQYHaf3huhKBw6KEO/B757W2.JGHHTDLwaIVYfQ.'
+
 helm upgrade --install argocd argo/argo-cd \
   --namespace argocd --create-namespace \
   --set server.service.type=LoadBalancer \
   --set "configs.params.server\.insecure=true" \
   --set dex.enabled=false \
+  --set "configs.secret.argocdServerAdminPassword=${ARGOCD_BCRYPT}" \
   --wait --timeout 5m
 
 echo "Waiting for ArgoCD server..."
 kubectl wait --for=condition=Available deployment/argocd-server \
   -n argocd --timeout=180s
 
-ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath="{.data.password}" | base64 -d)
+ARGOCD_PASS="murad7171"
 
 ARGOCD_IP=$(kubectl get svc argocd-server -n argocd \
   -o jsonpath="{.status.loadBalancer.ingress[0].ip}" 2>/dev/null || echo "pending")
