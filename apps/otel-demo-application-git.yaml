@@ -1,8 +1,5 @@
-# Alternative: Multi-source ArgoCD Application
-# Use this if you push the otel-demo/values.yaml to a Git repository,
-# allowing ArgoCD to track your custom values from Git.
-#
-# Replace <YOUR_GIT_REPO_URL> and <YOUR_BRANCH> with actual values.
+# Multi-source ArgoCD Application
+# Helm chart from OTel registry + custom values from Git repo
 
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -25,8 +22,8 @@ spec:
         valueFiles:
           - $values/otel-demo/values.yaml
     # Source 2: Custom values from your Git repo
-    - repoURL: <YOUR_GIT_REPO_URL>
-      targetRevision: <YOUR_BRANCH>
+    - repoURL: https://github.com/Murad-Suleymanov/OpenTelemetry-Demo.git
+      targetRevision: main
       ref: values
 
   destination:
