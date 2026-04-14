@@ -35,12 +35,6 @@ spec:
                               - opentelemetry-demo
                       topologyKey: kubernetes.io/hostname
 
-        components:
-          frontend-proxy:
-            service:
-              type: NodePort
-              nodePort: 30080
-
   destination:
     server: https://kubernetes.default.svc
     namespace: otel-demo

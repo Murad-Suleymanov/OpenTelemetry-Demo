@@ -1,9 +1,11 @@
 # OpenTelemetry Demo - Custom Helm Values
 # Chart: open-telemetry/opentelemetry-demo (v0.40.3)
-# Cluster: 1 master + 2 worker nodes
+# Cluster: 1 master (ubuntu-4gb-nbg1-1) + 2 workers (ubuntu-4gb-nbg1-2, ubuntu-4gb-nbg1-3)
+# Each node: 4GB RAM, Ubuntu 24.04, K8s v1.30.14
 #
-# Resource limits are tuned for a small cluster (~6GB RAM per worker).
+# All components enabled. Resource requests minimized to fit 4GB/node.
 # Pod anti-affinity spreads workloads across worker nodes.
+# Gateway API used for external access.
 
 default:
   env:
@@ -63,9 +65,6 @@ components:
       - name: OTEL_DOTNET_AUTO_TRACES_ENTITYFRAMEWORKCORE_INSTRUMENTATION_ENABLED
         value: "false"
     resources:
-      requests:
-        cpu: 20m
-        memory: 60Mi
       limits:
         memory: 120Mi
     initContainers:
@@ -93,9 +92,6 @@ components:
       - name: OTEL_LOGS_EXPORTER
         value: otlp
     resources:
-      requests:
-        cpu: 50m
-        memory: 150Mi
       limits:
         memory: 300Mi
 
@@ -121,9 +117,6 @@ components:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://$(OTEL_COLLECTOR_NAME):4317
     resources:
-      requests:
-        cpu: 20m
-        memory: 80Mi
       limits:
         memory: 160Mi
     initContainers:
@@ -165,9 +158,6 @@ components:
       - name: GOMEMLIMIT
         value: 16MiB
     resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
       limits:
         memory: 20Mi
     initContainers:
@@ -193,9 +183,6 @@ components:
       - name: IPV6_ENABLED
         value: "false"
     resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
       limits:
         memory: 20Mi
 
@@ -219,9 +206,6 @@ components:
       - name: FLAGD_PORT
         value: "8013"
     resources:
-      requests:
-        cpu: 20m
-        memory: 50Mi
       limits:
         memory: 100Mi
 
@@ -245,9 +229,6 @@ components:
       - name: OTEL_INSTRUMENTATION_MESSAGING_EXPERIMENTAL_RECEIVE_TELEMETRY_ENABLED
         value: "true"
     resources:
-      requests:
-        cpu: 50m
-        memory: 150Mi
       limits:
         memory: 300Mi
     initContainers:
@@ -301,9 +282,6 @@ components:
       - name: PUBLIC_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
         value: http://localhost:8080/otlp-http/v1/traces
     resources:
-      requests:
-        cpu: 50m
-        memory: 128Mi
       limits:
         memory: 250Mi
     securityContext:
@@ -317,8 +295,6 @@ components:
       env: true
     service:
       port: 8080
-      type: NodePort
-      nodePort: 30080
     podAnnotations:
       resource.opentelemetry.io/service.namespace: otel-demo
     env:
@@ -363,9 +339,6 @@ components:
       - name: OTEL_COLLECTOR_PORT_HTTP
         value: "4318"
     resources:
-      requests:
-        cpu: 10m
-        memory: 32Mi
       limits:
         memory: 65Mi
     securityContext:
@@ -389,9 +362,6 @@ components:
       - name: OTEL_COLLECTOR_HOST
         value: $(OTEL_COLLECTOR_NAME)
     resources:
-      requests:
-        cpu: 10m
-        memory: 25Mi
       limits:
         memory: 50Mi
 
@@ -431,9 +401,6 @@ components:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://$(OTEL_COLLECTOR_NAME):4317
     resources:
-      requests:
-        cpu: 100m
-        memory: 500Mi
       limits:
         memory: 1500Mi
 
@@ -457,9 +424,6 @@ components:
       - name: IPV6_ENABLED
         value: "false"
     resources:
-      requests:
-        cpu: 20m
-        memory: 70Mi
       limits:
         memory: 140Mi
     securityContext:
@@ -491,9 +455,6 @@ components:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://$(OTEL_COLLECTOR_NAME):4317
     resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
       limits:
         memory: 20Mi
 
@@ -535,9 +496,6 @@ components:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://$(OTEL_COLLECTOR_NAME):4317
     resources:
-      requests:
-        cpu: 20m
-        memory: 50Mi
       limits:
         memory: 100Mi
 
@@ -561,9 +519,6 @@ components:
       - name: IPV6_ENABLED
         value: "false"
     resources:
-      requests:
-        cpu: 10m
-        memory: 20Mi
       limits:
         memory: 40Mi
     securityContext:
@@ -595,9 +550,6 @@ components:
       - name: OTEL_EXPORTER_OTLP_ENDPOINT
         value: http://$(OTEL_COLLECTOR_NAME):4317
     resources:
-      requests:
-        cpu: 50m
-        memory: 250Mi
       limits:
         memory: 500Mi
 
@@ -619,9 +571,6 @@ components:
       - name: IPV6_ENABLED
         value: "false"
     resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
       limits:
         memory: 20Mi
 
@@ -648,9 +597,6 @@ components:
       - name: GOMEMLIMIT
         value: 60MiB
     resources:
-      requests:
-        cpu: 20m
-        memory: 40Mi
       limits:
         memory: 75Mi
     command:
@@ -728,9 +674,6 @@ components:
       - name: KAFKA_CONTROLLER_QUORUM_VOTERS
         value: 1@kafka:9093
     resources:
-      requests:
-        cpu: 100m
-        memory: 400Mi
       limits:
         memory: 700Mi
     securityContext:
@@ -776,9 +719,6 @@ components:
         mountPath: /docker-entrypoint-initdb.d
         existingConfigMap: postgresql-init
     resources:
-      requests:
-        cpu: 20m
-        memory: 50Mi
       limits:
         memory: 100Mi
 
@@ -796,9 +736,6 @@ components:
     podAnnotations:
       resource.opentelemetry.io/service.namespace: otel-demo
     resources:
-      requests:
-        cpu: 10m
-        memory: 10Mi
       limits:
         memory: 20Mi
     securityContext:
@@ -826,9 +763,6 @@ opentelemetry-collector:
       metrics:
         enabled: true
   resources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
     limits:
       memory: 200Mi
   service:
@@ -1060,9 +994,6 @@ prometheus:
     service:
       servicePort: 9090
     resources:
-      requests:
-        cpu: 50m
-        memory: 200Mi
       limits:
         memory: 400Mi
 
@@ -1097,9 +1028,6 @@ grafana:
         cpu: 100m
         memory: 100Mi
   resources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
     limits:
       memory: 175Mi
 
@@ -1121,8 +1049,5 @@ opensearch:
     - name: "DISABLE_SECURITY_PLUGIN"
       value: "true"
   resources:
-    requests:
-      cpu: 100m
-      memory: 600Mi
     limits:
       memory: 1100Mi
