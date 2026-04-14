@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otel-demo
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: otel-demo
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: otel-demo
+  source:
+    repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+    targetRevision: "0.40.3"
+    chart: opentelemetry-demo
+    helm:
+      releaseName: otel-demo
+      valueFiles: []
+      # Inline values from our custom values.yaml
+      # To use an external values file, push otel-demo/values.yaml to a Git repo
+      # and use a multi-source Application instead.
+      values: |
+        default:
+          schedulingRules:
+            affinity:
+              podAntiAffinity:
+                preferredDuringSchedulingIgnoredDuringExecution:
+                  - weight: 100
+                    podAffinityTerm:
+                      labelSelector:
+                        matchExpressions:
+                          - key: app.kubernetes.io/part-of
+                            operator: In
+                            values:
+                              - opentelemetry-demo
+                      topologyKey: kubernetes.io/hostname
+
+        components:
+          frontend-proxy:
+            service:
+              type: NodePort
+              nodePort: 30080
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: otel-demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      jsonPointers:
+        - /data

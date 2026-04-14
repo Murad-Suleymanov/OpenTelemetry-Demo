@@ -1,0 +1,58 @@
+# Alternative: Multi-source ArgoCD Application
+# Use this if you push the otel-demo/values.yaml to a Git repository,
+# allowing ArgoCD to track your custom values from Git.
+#
+# Replace <YOUR_GIT_REPO_URL> and <YOUR_BRANCH> with actual values.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: otel-demo
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: otel-demo
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: otel-demo
+  sources:
+    # Source 1: Helm chart from OTel registry
+    - repoURL: https://open-telemetry.github.io/opentelemetry-helm-charts
+      targetRevision: "0.40.3"
+      chart: opentelemetry-demo
+      helm:
+        releaseName: otel-demo
+        valueFiles:
+          - $values/otel-demo/values.yaml
+    # Source 2: Custom values from your Git repo
+    - repoURL: <YOUR_GIT_REPO_URL>
+      targetRevision: <YOUR_BRANCH>
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: otel-demo
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      jsonPointers:
+        - /data
