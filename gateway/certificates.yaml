@@ -15,6 +15,7 @@ spec:
               - name: otel-demo-gateway
                 namespace: otel-demo
                 kind: Gateway
+                sectionName: http
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate

@@ -13,9 +13,89 @@ metadata:
 spec:
   gatewayClassName: eg
   listeners:
+    # HTTP listener - used for cert-manager ACME challenges + redirect
     - name: http
       protocol: HTTP
       port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    # HTTPS listeners - one per hostname with its own TLS cert
+    - name: https-oteldemo
+      protocol: HTTPS
+      port: 443
+      hostname: oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: oteldemo-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: https-grafana
+      protocol: HTTPS
+      port: 443
+      hostname: grafana-oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: grafana-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: https-jaeger
+      protocol: HTTPS
+      port: 443
+      hostname: jaeger-oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: jaeger-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: https-loadgen
+      protocol: HTTPS
+      port: 443
+      hostname: loadgen-oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: loadgen-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: https-flagd
+      protocol: HTTPS
+      port: 443
+      hostname: flagd-oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: flagd-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+
+    - name: https-argocd
+      protocol: HTTPS
+      port: 443
+      hostname: argocd-oteldemo.easysolution.work
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: argocd-tls
       allowedRoutes:
         namespaces:
           from: All

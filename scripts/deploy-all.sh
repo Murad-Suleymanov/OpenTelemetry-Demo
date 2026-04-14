@@ -140,8 +140,21 @@ kubectl apply -f "${REPO_DIR}/gateway/certificates.yaml"
 echo ""
 echo "Waiting for Gateway to get external IP..."
 sleep 15
+
+echo "Patching Envoy proxy externalTrafficPolicy to Cluster..."
+ENVOY_SVC=$(kubectl get svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=otel-demo-gateway \
+  -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
+if [ -n "$ENVOY_SVC" ]; then
+  kubectl patch svc "$ENVOY_SVC" -n envoy-gateway-system \
+    -p '{"spec":{"externalTrafficPolicy":"Cluster"}}' 2>/dev/null || true
+fi
+
 GW_IP=$(kubectl get gateway otel-demo-gateway -n otel-demo \
   -o jsonpath="{.status.addresses[0].value}" 2>/dev/null || echo "pending")
+
+echo "Resetting Grafana admin password..."
+sleep 5
+kubectl exec -n otel-demo deploy/grafana -- grafana-cli admin reset-admin-password murad7171 2>/dev/null || echo "  (Grafana not ready yet, reset password manually later)"
 
 echo ""
 echo "=========================================="
